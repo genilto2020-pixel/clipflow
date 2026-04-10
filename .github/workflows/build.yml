@@ -1,0 +1,37 @@
+name: Gerar ClipFlow.exe
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Gerar o .exe
+        run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publicar o .exe como release
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClipFlow-Windows
+          path: |
+            dist/*.exe
+            dist/*.zip
+          retention-days: 30
